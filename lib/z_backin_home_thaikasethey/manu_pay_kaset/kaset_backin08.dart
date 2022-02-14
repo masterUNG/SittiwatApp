@@ -1,0 +1,225 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:sittiwat_app/model/my_style.dart';
+
+
+class KasetBackin08 extends StatefulWidget {
+  const KasetBackin08({Key? key}) : super(key: key);
+
+  @override
+  _KasetBackin08State createState() => _KasetBackin08State();
+}
+
+class _KasetBackin08State extends State<KasetBackin08> {
+  late double screen;
+
+  @override
+  Widget build(BuildContext context) {
+    screen = MediaQuery.of(context).size.width;
+    // ignore: avoid_print
+    print("screen = $screen");
+
+    return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 40,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [MyStyle().greenColor, MyStyle().blackColor],
+              begin: Alignment.bottomRight,
+              end: Alignment.topLeft,
+            ),
+          ),
+        ),
+        title: const Text(
+          " ร้านขอใบกำกับภาษีค่าสมาชิกรายปี",
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            color: Colors.white,
+          ),
+        ),
+      ),
+      body: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("ร้านขอใบกำกับภาษีค่าสมาชิกรายปี")
+            .snapshots(),
+        builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          return ListView(
+            children: snapshot.data!.docs.map(
+              (document) {
+                return Card(
+                  color: Colors.green.shade900,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(5.0),
+                            child: CircleAvatar(
+                              backgroundColor: MyStyle().greenColor,
+                              radius: 22,
+                              child: const CircleAvatar(
+                                backgroundColor: Colors.white,
+                                radius: 20,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Column(
+                            children: [
+                              MyStyle().fonWhite15("data:ชื่อ"),
+                              MyStyle().fonWhite12("data:รหัส"),
+                            ],
+                          ),
+                        ],
+                      ),
+                      MyStyle().fonWhite15("ผู้ขอใบกำกับภาษีค่าสมาชิกรายปี"),
+                      Card(
+                        color: Colors.black12,
+                        child: ExpansionTile(
+                          title: MyStyle()
+                              .fonWhite12("รายระเอียดการขอใบกำกับภาษีค่าสมาชิกรายปี"),
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    children: [
+                                      MyStyle().fonWhite15("ชื่อบริษัท/ร้านค้า:"),
+                                      const SizedBox(width: 5),
+                                      MyStyle().fonWhite15(document["user1"]),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      MyStyle().fonWhite15("สาขา:"),
+                                      const SizedBox(width: 5),
+                                      MyStyle().fonWhite15(document["user2"]),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      MyStyle().fonWhite15("ชื่อเจ้าของกิจการ:"),
+                                      const SizedBox(width: 5),
+                                      MyStyle().fonWhite15(document["user3"]),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      MyStyle().fonWhite15("เลนประจำตัวผู้เสียภาษี:"),
+                                      const SizedBox(width: 5),
+                                      MyStyle().fonWhite15(document["user4"]),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      MyStyle().fonWhite15("ที่อยู่:"),
+                                      const SizedBox(width: 5),
+                                      MyStyle().fonWhite15(document["user5"]),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      MyStyle().fonWhite15("เบอร์โทร:"),
+                                      const SizedBox(width: 5),
+                                      MyStyle().fonWhite15(document["user6"]),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            MyStyle().fonWhite15("รูปทะเบียนการค้า"),
+                            Card(
+                              elevation: 3,
+                              shadowColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: SizedBox(
+                                width: screen * 0.8,
+                                height: screen * 0.5,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    image: DecorationImage(
+                                      image: NetworkImage(document["image"]),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Divider(color: Colors.black),
+                            const SizedBox(height: 10),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: SizedBox(
+                                    width: screen * 0.4,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey.shade900,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child:
+                                            MyStyle().fonorange20("ไม่ถูกต้อง"),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(3.0),
+                                  child: SizedBox(
+                                    width: screen * 0.4,
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.blueGrey.shade900,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      onPressed: () {},
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child:
+                                            MyStyle().fonyellouu20("ถูกต้อง"),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ).toList(),
+          );
+        },
+      ),
+    );
+  }
+}

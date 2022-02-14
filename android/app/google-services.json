@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "403026313078",
+    "project_id": "sittiwatappthaikasethey",
+    "storage_bucket": "sittiwatappthaikasethey.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403026313078:android:416c9acaeeb5ef09adc457",
+        "android_client_info": {
+          "package_name": "com.example.sittiwat_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403026313078-h18ju59l0tp9mgva7lg9eul358855og4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sittiwat_app",
+            "certificate_hash": "f7b8f7e29f19c6b431a909a4c7eb7619f07843fe"
+          }
+        },
+        {
+          "client_id": "403026313078-4395ukmu7sv9nu6haom6d4s23d8ibda4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjsxfzNDliVxLqzvhVdXQ_Wo1fOvbjVZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403026313078-4395ukmu7sv9nu6haom6d4s23d8ibda4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
