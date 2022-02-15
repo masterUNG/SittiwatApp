@@ -1,84 +1,39 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-
-
 class UserModel {
- final String email;
- final String name;
- final String cord;
- final String typeuser;
+  final String email;
+  final String name;
+  final String cord;
+  final String typeuser;
+  final String urlProfile;
   UserModel({
     required this.email,
     required this.name,
     required this.cord,
     required this.typeuser,
+    required this.urlProfile,
   });
 
-  UserModel copyWith({
-    String? email,
-    String? name,
-    String? cord,
-    String? typeuser,
-  }) {
-    return UserModel(
-      email: email ?? this.email,
-      name: name ?? this.name,
-      cord: cord ?? this.cord,
-      typeuser: typeuser ?? this.typeuser,
-    );
-  }
-
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'email': email,
       'name': name,
       'cord': cord,
       'typeuser': typeuser,
+      'urlProfile': urlProfile,
     };
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      email: map['email'],
-      name: map['name'],
-      cord: map['cord'],
-      typeuser: map['typeuser'],
+      email: (map['email'] ?? '') as String,
+      name: (map['name'] ?? '') as String,
+      cord: (map['cord'] ?? '') as String,
+      typeuser: (map['typeuser'] ?? '') as String,
+      urlProfile: (map['urlProfile'] ?? '') as String,
     );
   }
 
-  String toJson() => json.encode(toMap());
-
-  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'UserModel(email: $email, name: $name, cord: $cord, typeuser: $typeuser)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-  
-    return other is UserModel &&
-      other.email == email &&
-      other.name == name &&
-      other.cord == cord &&
-      other.typeuser == typeuser;
-  }
-
-  @override
-  int get hashCode {
-    return email.hashCode ^
-      name.hashCode ^
-      cord.hashCode ^
-      typeuser.hashCode;
-  }
+  factory UserModel.fromJson(String source) => UserModel.fromMap(json.decode(source) as Map<String, dynamic>);
 }
-
-
-
-
-
-
-
-

@@ -61,7 +61,7 @@ class _BuilNaviBerState extends State<BuilNaviBer> {
             ),
           ),
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, "/profilecontrol"),
+            onPressed: () => Navigator.pushNamedAndRemoveUntil(context, "/profilecontrol", (route) => false),
             icon: Icon(
               Icons.account_circle_outlined,
               color: Colors.orange.shade800,

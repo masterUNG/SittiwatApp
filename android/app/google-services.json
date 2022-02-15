@@ -41,6 +41,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:403026313078:android:3183f4886c6a776eadc457",
+        "android_client_info": {
+          "package_name": "com.tom.sittiwatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "403026313078-4395ukmu7sv9nu6haom6d4s23d8ibda4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjsxfzNDliVxLqzvhVdXQ_Wo1fOvbjVZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "403026313078-4395ukmu7sv9nu6haom6d4s23d8ibda4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

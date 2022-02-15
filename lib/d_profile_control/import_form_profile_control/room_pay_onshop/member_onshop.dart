@@ -63,7 +63,7 @@ class _MemberOnShopState extends State<MemberOnShop> {
                   radius: 25,
                 ),
               ),
-              onPressed: () => Navigator.pushNamed(context, "/paymember"),
+              onPressed: () => Navigator.pushNamedAndRemoveUntil(context,  "/paymember", (route) => false),
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

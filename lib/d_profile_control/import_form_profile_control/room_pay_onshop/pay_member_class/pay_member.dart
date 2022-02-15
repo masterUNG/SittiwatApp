@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sittiwat_app/model/my_dialog.dart';
 import 'package:sittiwat_app/model/my_style.dart';
 import 'package:sittiwat_app/model/show_profile/profile_name_gmail.dart';
+import 'package:sittiwat_app/model/year_member.dart';
 
 class PayMember extends StatefulWidget {
   const PayMember({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class PayMember extends StatefulWidget {
 
 class _PayMemberState extends State<PayMember> {
   late double screen;
+
   @override
   Widget build(BuildContext context) {
     screen = MediaQuery.of(context).size.width;
@@ -27,198 +30,236 @@ class _PayMemberState extends State<PayMember> {
     print("screen = $screen");
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              width: double.infinity,
-              height: 180,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Colors.green.shade900,
-                    Colors.green.shade900,
-                    //Colors.greenAccent,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: const BorderRadius.only(
-                  bottomRight: Radius.circular(100),
-                  bottomLeft: Radius.circular(100),
-                ),
+        child: GestureDetector(
+          onTap: () => FocusScope.of(context).requestFocus(FocusScopeNode()),
+          behavior: HitTestBehavior.opaque,
+          child: Column(
+            children: [
+              newContainnerTop(context),
+              newContainnerButton(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget newContainnerButton(BuildContext context) {
+    return Expanded(
+      child: ListView(
+        physics: const ScrollPhysics(),
+        shrinkWrap: true,
+        children: [
+          const SizedBox(height: 15),
+          formKaset(), //เงื่อนไข
+          const SizedBox(height: 15),
+          monneKaset(), //บัญชีบริษัท
+          const SizedBox(height: 15),
+          qrCord(), //แสดงคิวอาโค๊ดเพื่อแสกนการจ่ายเงิน
+          const SizedBox(height: 15),
+          textMember01(), //ชื่อผู้โอน
+          const SizedBox(height: 15),
+          textMember02(), //จำนวนเงินที่โอน
+          const SizedBox(height: 15),
+          textMember03(), //วันที่โอนเงิน
+          const SizedBox(height: 15),
+          textMember04(), //เวลาโอนเงิน
+          const SizedBox(height: 15),
+          textMember05(), //เบอร์โทร
+          const SizedBox(height: 20),
+          MyStyle().fonBack15("รูปสลีปการโอนเงิน"),
+          const SizedBox(height: 20),
+          imageMember(), //สลีปการโอนเงิน
+          const SizedBox(height: 20),
+          MyStyle()
+              .fonBack15("กรุณาระบุบัญชีของท่านเพื่อผูกไว้กับทางแอพ Kaset Hey"),
+          MyStyle().fonBack15(
+              "กรณีขายสินค้าได้ทางแอพจะทำการโอนเงินเข้าบัญชีทีท่านกรอกนี้"),
+          const SizedBox(height: 15),
+          textMember11(), //ชื่อร้าน/สวน
+          const SizedBox(height: 15),
+          textMember12(), //ชื่อ-สกุล
+          const SizedBox(height: 15),
+          textMember13(), //รหัส ร้าน/สวน
+          const SizedBox(height: 15),
+          textMember14(), //ที่อยู่
+          const SizedBox(height: 15),
+          choicetest(), //ช้อยตักเลือก
+          const SizedBox(height: 15),
+          textMember06(), //ชื่อบัญชี
+          const SizedBox(height: 15),
+          textMember07(), //ชื่อธนาคาร
+          const SizedBox(height: 15),
+          textMember08(), //สาขาธนาคาร
+          const SizedBox(height: 15),
+          textMember09(), //เลขบัญชี
+          const SizedBox(height: 15),
+          textMember10(), //เบอร์โทร
+          const SizedBox(height: 20),
+          Center(
+            child: Card(
+              elevation: 5,
+              shadowColor: Colors.black,
+              color: Colors.green.shade900,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        children: [
-                          IconButton(
-                            onPressed: () =>
-                                Navigator.pushNamed(context, "/story"),
-                            icon: const Icon(
-                              Icons.switch_account_outlined,
-                              color: Colors.white,
-                              size: 20,
-                            ),
+              child: InkWell(
+                onTap: () async {
+                  DateTime dateTime = DateTime.now();
+                  dateTime = DateTime(
+                    dateTime.year,
+                    dateTime.month,
+                    dateTime.day,
+                  );
+                  DateTime endDateTime = DateTime(
+                    dateTime.year + 1,
+                    dateTime.month,
+                    dateTime.day,
+                  );
+                  print('#14feb dateTime วันที่สมัคร ==>> $dateTime');
+                  print('#14feb endDateTime วันหมดอายุ ==>> $endDateTime');
+
+                  await FirebaseAuth.instance
+                      .authStateChanges()
+                      .listen((event) async {
+                    String uid = event!.uid;
+
+                    YearMemberModel yearMemberModel = YearMemberModel(
+                        approve: false,
+                        startMember: Timestamp.fromDate(dateTime),
+                        expireMember: Timestamp.fromDate(endDateTime));
+
+                    await FirebaseFirestore.instance
+                        .collection('user')
+                        .doc(uid)
+                        .collection('yearmember')
+                        .doc()
+                        .set(yearMemberModel.toMap())
+                        .then((value) =>
+                            print('#14feb Success Insert Yearmember'));
+                  });
+
+                  // if (image == null) {
+                  //   normalDialog(context, "ไม่มีรูปสลีป",
+                  //       "กรุณาใส่รูปสลีปการโอนด้วยครับ");
+                  // } else {
+                  //   uploadPictureToStorage();
+
+                  //   Navigator.pop(context);
+                  //   Fluttertoast.showToast(
+                  //     msg: "ขอบคุณที่ให้การสนับสนุนครับ",
+                  //     timeInSecForIosWeb: 5,
+                  //     fontSize: 20,
+                  //     gravity: ToastGravity.CENTER,
+                  //     backgroundColor: Colors.white,
+                  //     textColor: Colors.black,
+                  //   );
+                  // }
+                },
+                child: SizedBox(
+                  width: screen * 0.9,
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        //height: 30,
+                        width: screen * 0.6,
+                        child: Center(
+                          child: MyStyle().fonWhite25("ส่งข้อมูล"),
+                        ),
+                        decoration: BoxDecoration(
+                          color: MyStyle().orangeColor,
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(80.0),
+                            topLeft: Radius.circular(80.0),
+                            bottomRight: Radius.circular(200.0),
                           ),
-                          MyStyle().fonWhite12("สตอรี่")
-                        ],
-                      ),
-                      CircleAvatar(
-                        backgroundColor: MyStyle().greenColor,
-                        radius: 32,
-                        child: const CircleAvatar(
-                          backgroundColor: Colors.white,
-                          radius: 30,
                         ),
                       ),
-                      Column(
-                        children: [
-                          IconButton(
-                            onPressed: () =>
-                                Navigator.pushNamed(context, "/profilecontrol"),
-                            icon: const Icon(
-                              Icons.account_circle_outlined,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                          MyStyle().fonWhite12("ฉัน")
-                        ],
-                      ),
+                      const SizedBox(width: 20),
+                      const Icon(
+                        Icons.touch_app,
+                        size: 30,
+                        color: Colors.white,
+                      )
                     ],
                   ),
-                  const Expanded(child: ProfileNameGmail()),
-                  Center(
-                      child: MyStyle().fonWhite15("สมัครสมาชิกรายปี/ชำระเงิน")),
-                  const SizedBox(height: 10)
-                ],
-              ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 15),
-                        formKaset(), //เงื่อนไข
-                        const SizedBox(height: 15),
-                        monneKaset(), //บัญชีบริษัท
-                        const SizedBox(height: 15),
-                        qrCord(), //แสดงคิวอาโค๊ดเพื่อแสกนการจ่ายเงิน
-                        const SizedBox(height: 15),
-                        textMember01(), //ชื่อผู้โอน
-                        const SizedBox(height: 15),
-                        textMember02(), //จำนวนเงินที่โอน
-                        const SizedBox(height: 15),
-                        textMember03(), //วันที่โอนเงิน
-                        const SizedBox(height: 15),
-                        textMember04(), //เวลาโอนเงิน
-                        const SizedBox(height: 15),
-                        textMember05(), //เบอร์โทร
-                        const SizedBox(height: 20),
-                        MyStyle().fonBack15("รูปสลีปการโอนเงิน"),
-                        const SizedBox(height: 20),
-                        imageMember(), //สลีปการโอนเงิน
-                        const SizedBox(height: 20),
-                        MyStyle().fonBack15(
-                            "กรุณาระบุบัญชีของท่านเพื่อผูกไว้กับทางแอพ Kaset Hey"),
-                        MyStyle().fonBack15(
-                            "กรณีขายสินค้าได้ทางแอพจะทำการโอนเงินเข้าบัญชีทีท่านกรอกนี้"),
-                        const SizedBox(height: 15),
-                        textMember11(), //ชื่อร้าน/สวน
-                        const SizedBox(height: 15),
-                        textMember12(), //ชื่อ-สกุล
-                        const SizedBox(height: 15),
-                        textMember13(), //รหัส ร้าน/สวน
-                        const SizedBox(height: 15),
-                        textMember14(), //ที่อยู่
-                        const SizedBox(height: 15),
-                        choicetest(), //ช้อยตักเลือก
-                        const SizedBox(height: 15),
-                        textMember06(), //ชื่อบัญชี
-                        const SizedBox(height: 15),
-                        textMember07(), //ชื่อธนาคาร
-                        const SizedBox(height: 15),
-                        textMember08(), //สาขาธนาคาร
-                        const SizedBox(height: 15),
-                        textMember09(), //เลขบัญชี
-                        const SizedBox(height: 15),
-                        textMember10(), //เบอร์โทร
-                        const SizedBox(height: 20),
-                        Center(
-                          child: Card(
-                            elevation: 5,
-                            shadowColor: Colors.black,
-                            color: Colors.green.shade900,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: InkWell(
-                              onTap: () {
-                                if (image == null) {
-                                  normalDialog(context, "ไม่มีรูปสลีป",
-                                      "กรุณาใส่รูปสลีปการโอนด้วยครับ");
-                                } else {
-                                  uploadPictureToStorage();
-                                  Navigator.pop(context);
-                                  Fluttertoast.showToast(
-                                    msg: "ขอบคุณที่ให้การสนับสนุนครับ",
-                                    timeInSecForIosWeb: 5,
-                                    fontSize: 20,
-                                    gravity: ToastGravity.CENTER,
-                                    backgroundColor: Colors.white,
-                                    textColor: Colors.black,
-                                  );
-                                }
-                              },
-                              child: SizedBox(
-                                width: screen * 0.9,
-                                child: Row(
-                                  children: <Widget>[
-                                    Container(
-                                      //height: 30,
-                                      width: screen * 0.6,
-                                      child: Center(
-                                        child:
-                                            MyStyle().fonWhite25("ส่งข้อมูล"),
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: MyStyle().orangeColor,
-                                        borderRadius: const BorderRadius.only(
-                                          bottomLeft: Radius.circular(80.0),
-                                          topLeft: Radius.circular(80.0),
-                                          bottomRight: Radius.circular(200.0),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 20),
-                                    const Icon(
-                                      Icons.touch_app,
-                                      size: 30,
-                                      color: Colors.white,
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 25),
-                      ],
-                    ),
-                  ),
                 ),
               ),
             ),
+          ),
+          const SizedBox(height: 25),
+        ],
+      ),
+    );
+  }
+
+  Container newContainnerTop(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 180,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Colors.green.shade900,
+            Colors.green.shade900,
+            //Colors.greenAccent,
           ],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
+        borderRadius: const BorderRadius.only(
+          bottomRight: Radius.circular(100),
+          bottomLeft: Radius.circular(100),
+        ),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pushNamed(context, "/story"),
+                    icon: const Icon(
+                      Icons.switch_account_outlined,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  MyStyle().fonWhite12("สตอรี่")
+                ],
+              ),
+              CircleAvatar(
+                backgroundColor: MyStyle().greenColor,
+                radius: 32,
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  radius: 30,
+                ),
+              ),
+              Column(
+                children: [
+                  IconButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, "/profilecontrol"),
+                    icon: const Icon(
+                      Icons.account_circle_outlined,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                  MyStyle().fonWhite12("ฉัน")
+                ],
+              ),
+            ],
+          ),
+          const Expanded(child: ProfileNameGmail()),
+          Center(child: MyStyle().fonWhite15("สมัครสมาชิกรายปี/ชำระเงิน")),
+          const SizedBox(height: 10)
+        ],
       ),
     );
   }

@@ -1,4 +1,4 @@
-package com.example.sittiwat_app
+package com.tom.sittiwatapp
 
 import io.flutter.embedding.android.FlutterActivity
 

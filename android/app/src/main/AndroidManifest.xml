@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.sittiwat_app">
+    package="com.tom.sittiwatapp">
    <application
         android:label="sittiwat_app"
         android:icon="@mipmap/launher_icon">

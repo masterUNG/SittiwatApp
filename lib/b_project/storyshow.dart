@@ -1,11 +1,17 @@
+import 'dart:async';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:sittiwat_app/b_project/imoort_form_story/form_story/my_form_story.dart';
 import 'package:sittiwat_app/e_bar/botton_ber.dart';
 import 'package:sittiwat_app/model/class_bar.dart';
+import 'package:sittiwat_app/model/my_dialog.dart';
 import 'package:sittiwat_app/model/my_style.dart';
+import 'package:sittiwat_app/model/year_member.dart';
+import 'package:sittiwat_app/utility/check_year_member.dart';
 import 'package:video_player/video_player.dart';
 
 class StoryShow extends StatefulWidget {
@@ -17,6 +23,112 @@ class StoryShow extends StatefulWidget {
 
 class _StoryShowState extends State<StoryShow> {
   late double screen;
+  var yearMemberModels = <YearMemberModel>[];
+
+  FlutterLocalNotificationsPlugin flutterLocalNotifiactionPlugin =
+      FlutterLocalNotificationsPlugin();
+  InitializationSettings? initializationSettings;
+  AndroidInitializationSettings? androidInitializationSettings;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkExpairYear();
+    setupLocalNoti();
+  }
+
+  Future<void> setupLocalNoti() async {
+    androidInitializationSettings =
+        const AndroidInitializationSettings('app_icon');
+    initializationSettings =
+        InitializationSettings(android: androidInitializationSettings);
+
+    await flutterLocalNotifiactionPlugin.initialize(
+      initializationSettings!,
+      onSelectNotification: onSelectNoti,
+    );
+  }
+
+  Future<void> onSelectNoti(String? string) async {
+    if (string != null) {
+      checkExpairYear();
+    }
+  }
+
+  Future<void> processShowLocalNoti(String title, String subTitle) async {
+    AndroidNotificationDetails androidNotificationDetails =
+        const AndroidNotificationDetails(
+      'channelId',
+      'channelName',
+      priority: Priority.high,
+      importance: Importance.max,
+      ticker: 'test',
+    );
+
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+    );
+
+    await flutterLocalNotifiactionPlugin.show(
+        0, title, subTitle, notificationDetails);
+  }
+
+  Future<void> checkExpairYear() async {
+    await CheckYearMember(context: context).processCheck().then((value) async {
+      var result = value.docs;
+      if (result.isEmpty) {
+        normalDialog(
+            context, 'ยังไม่ได้ สมัครรายปี', 'โปรด สมัครการใช้ งานรายปีก่อน');
+      } else {
+        print('#15feb จ่ายปีแล้ว');
+        for (var item in result) {
+          YearMemberModel yearMemberModel =
+              YearMemberModel.fromMap(item.data());
+          yearMemberModels.add(yearMemberModel);
+        }
+
+        DateTime currentDatetime = DateTime.now();
+        DateTime expairDatetime = yearMemberModels[0].expireMember.toDate();
+        DateTime startDatetime = yearMemberModels[0].startMember.toDate();
+
+        DateTime notiDatetime = startDatetime.add(const Duration(days: 275));
+
+        print(
+            '#15feb current ==> $currentDatetime, expire ==> $expairDatetime');
+
+        print('#15feb notiDatetime ==>> $notiDatetime');
+
+        notiDatetime = currentDatetime; // โกงเพื่อทดสอบ
+
+        if (currentDatetime.compareTo(notiDatetime) == 0) {
+          print('#15feb วันนี่แหละ ที่ แสดงการแจ้เตือน');
+
+          await Timer(const Duration(seconds: 20), () {
+            processShowLocalNoti(
+                'อีกสามเดือน หมดอายุ', 'ExpDate ==> $expairDatetime');
+          });
+        } else {
+          print('#15feb วันนี่ไม่ใช่');
+        }
+
+        if (currentDatetime.isBefore(expairDatetime)) {
+          int difDay = expairDatetime.difference(currentDatetime).inDays;
+          print('#15feb ก่อนหมดเวลา $difDay วัน');
+
+          if (difDay <= 90) {
+            normalDialog(context, 'เตรียมเติมเงินด้วย',
+                'expDate ==> $expairDatetime \n เหลือเวลาอีก $difDay ว้น จะหมดอายุ');
+          }
+        } else {
+          print('#15feb หลังหมดเวลา');
+          normalDialog(context, 'Expair Year Member',
+              'Expire year ==> $expairDatetime \n กรุณา เติมเงิน year member');
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     screen = MediaQuery.of(context).size.width;
@@ -50,7 +162,7 @@ class _StoryShowState extends State<StoryShow> {
               ),
               flexibleSpace: Stack(
                 children: [
-                  videoBarStory(), //ชุดแสดง VIdeo แทบบน
+                  // videoBarStory(), //ชุดแสดง VIdeo แทบบน
                   FlexibleSpaceBar(
                     title: bottonSoppingAuction(context),
                   ),

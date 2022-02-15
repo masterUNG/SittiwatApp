@@ -1,5 +1,6 @@
 // //หน้าต่างนโยบาย Kaset Hey
 import 'package:chewie/chewie.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:sittiwat_app/model/my_style.dart';
 import 'package:video_player/video_player.dart';
@@ -109,7 +110,10 @@ class _MyDrawerState extends State<MyDrawer> {
                         title: MyStyle().fonBack15("นโยบายหลัก Kaset Hey"),
                       ),
                       ListTile(
-                        onTap: () => Navigator.pushNamed(context, "/login"),
+                        onTap: () async {
+                          await FirebaseAuth.instance.signOut().then((value) =>
+                              Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false));
+                        },
                         leading: const Icon(
                           Icons.logout_outlined,
                           size: 25,

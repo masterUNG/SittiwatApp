@@ -375,7 +375,7 @@ class _LoginState extends State<Login> {
   // ignore: prefer_void_to_null
   Future<Null> insertValueToCloudFirestore() async {
     UserModel model =
-        UserModel(email: email, name: name, cord: cord, typeuser: typeUser);
+        UserModel(email: email, name: name, cord: cord, typeuser: typeUser, urlProfile: '');
     Map<String, dynamic> data = model.toMap();
 
     await Firebase.initializeApp().then((value) async {

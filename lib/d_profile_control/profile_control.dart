@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'dart:ui';
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sittiwat_app/a_login/class_user/class_profile_uid.dart';
 import 'package:sittiwat_app/d_profile_control/import_form_profile_control/room_adver/open_adver.dart';
 import 'package:sittiwat_app/d_profile_control/import_form_profile_control/room_pay_onauction/member_onauction.dart';
 import 'package:sittiwat_app/d_profile_control/import_form_profile_control/room_pay_onshop/member_onshop.dart';
@@ -12,12 +11,12 @@ import 'package:sittiwat_app/d_profile_control/import_form_profile_control/room_
 import 'package:sittiwat_app/d_profile_control/import_form_profile_control/run_manage.dart';
 import 'package:sittiwat_app/d_profile_control/import_form_profile_control/shopping_sponsor.dart';
 import 'package:sittiwat_app/d_profile_control/import_form_profile_control/techniv_app.dart';
-import 'package:sittiwat_app/d_profile_control/import_form_profile_control/transport_on_map/transport.dart';
 import 'package:sittiwat_app/d_profile_control/room_home_kaser/my_drawer.dart';
 import 'package:sittiwat_app/e_bar/botton_ber.dart';
 import 'package:sittiwat_app/model/class_bar.dart';
 import 'package:sittiwat_app/model/my_style.dart';
 import 'package:sittiwat_app/model/show_profile/profile_name_gmail.dart';
+import 'package:sittiwat_app/utility/get_user_model.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 import 'package:video_player/video_player.dart';
 
@@ -31,6 +30,26 @@ class ProfileControl extends StatefulWidget {
 class _ProfileControlState extends State<ProfileControl> {
   final auth = FirebaseAuth.instance;
   late double screen;
+
+  UserModel? userModel;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    findUserModel();
+  }
+
+  Future<void> findUserModel() async {
+    print('#15feb work');
+    await GetUserModel().processGetUserModel().then((value) {
+      setState(() {
+        userModel = value;
+        print('#15feb urlImage ==>> ${userModel!.urlProfile}');
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     screen = MediaQuery.of(context).size.width;
@@ -86,7 +105,7 @@ class _ProfileControlState extends State<ProfileControl> {
                     const SizedBox(height: 3),
                     const ShareLikeOnShop(), //ส่วนเปิดแชร์ขายฟรี45วัน
                     const SizedBox(height: 3),
-                    const ShoppingSponsor(),//โซนประกาศชักชวนให้ลงโฆษณาในแอพ          
+                    const ShoppingSponsor(), //โซนประกาศชักชวนให้ลงโฆษณาในแอพ
                     const SizedBox(height: 3),
                     const TechnivApp(),
                     const SizedBox(height: 3),
@@ -163,9 +182,9 @@ class _ProfileControlState extends State<ProfileControl> {
             looping: true,
             autoPlay: true,
             fullScreenByDefault: false,
-            videoPlayerController: VideoPlayerController.asset("lib/video/intorlkaset3.mp4"),
+            videoPlayerController:
+                VideoPlayerController.asset("lib/video/intorlkaset3.mp4"),
           ),
-          
         ),
       ),
     );
@@ -191,8 +210,8 @@ class _ProfileControlState extends State<ProfileControl> {
                 child: CircleAvatar(
                   radius: 35,
                   backgroundColor: Colors.black12,
-                  backgroundImage:
-                      _imageFile == null ? null : FileImage(_imageFile!),
+                  backgroundImage:  userModel == null ? null : NetworkImage(userModel!.urlProfile) ,
+                     
                 ),
               ),
               Positioned(
@@ -558,5 +577,4 @@ class _ProfileControlState extends State<ProfileControl> {
   }
   //สิ้นสุด--#######
 
-  
 }

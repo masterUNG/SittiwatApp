@@ -120,6 +120,7 @@ dependencies:
 
   # ปลั๊กอิน ตัวทำสไลแบบอัตโนมัติ
   carousel_slider: ^4.0.0
+  flutter_local_notifications: ^9.3.1
 
 flutter_icons:
   android: "launher_icon"
