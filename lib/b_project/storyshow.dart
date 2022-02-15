@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:chewie/chewie.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:sittiwat_app/a_login/class_user/class_profile_uid.dart';
 import 'package:sittiwat_app/b_project/imoort_form_story/form_story/my_form_story.dart';
 import 'package:sittiwat_app/e_bar/botton_ber.dart';
 import 'package:sittiwat_app/model/class_bar.dart';
@@ -36,6 +38,53 @@ class _StoryShowState extends State<StoryShow> {
     super.initState();
     checkExpairYear();
     setupLocalNoti();
+    readAllUser();
+  }
+
+  int amountBuyer = 0;
+  int amountSeller = 0;
+
+  var idCords = <String>[];
+
+  Future<void> readAllUser() async {
+    await FirebaseFirestore.instance.collection('user').get().then((value) {
+      for (var item in value.docs) {
+        UserModel userModel = UserModel.fromMap(item.data());
+        switch (userModel.typeuser) {
+          case 'user':
+            amountBuyer++;
+            break;
+          case 'shop':
+            amountSeller++;
+            break;
+          default:
+        }
+
+        List<String> strings = userModel.cord.split('/');
+        print('#15feb strings ==> $strings');
+        strings[0] = strings[0].trim();
+        print('#15feb string[0] ==>> ${strings[0]}');
+
+        if (idCords.isEmpty) {
+          idCords.add(strings[0]);
+        } else {
+          bool mybool = true;
+          for (var item in idCords) {
+            if (strings[0] == item) {
+              mybool = false;
+            }
+          }
+          if (mybool) {
+            idCords.add(strings[0]);
+          }
+        }
+      }
+
+      setState(() {});
+
+      print(
+          '#15feb amountUser ==>> $amountBuyer, amountSeller ==>> $amountSeller  idCords ==>>> $idCords');
+    });
   }
 
   Future<void> setupLocalNoti() async {
@@ -175,7 +224,30 @@ class _StoryShowState extends State<StoryShow> {
               child: Center(
                 child: Column(
                   children: [
-                    barStar(), //บาไสลเลื่อนซ้ายขวาอยู่แทบบน (โชโปรไฟ ดาวเกษตร)
+                    barStar(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        SizedBox(
+                          width: 150,
+                          child: Row(
+                            children: [
+                              Text('Amount Buyer : '),
+                              Text(amountBuyer.toString()),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          width: 150,
+                          child: Row(
+                            children: [
+                              Text('Amount Seller : '),
+                              Text(amountSeller.toString()),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ), //บาไสลเลื่อนซ้ายขวาอยู่แทบบน (โชโปรไฟ ดาวเกษตร)
                     const Expanded(
                         child:
                             MyFormStory()), //เนื้อหาส่วนกลางแสดงผลการโพสสตอรี่
